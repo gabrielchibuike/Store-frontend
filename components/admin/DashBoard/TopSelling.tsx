@@ -56,10 +56,10 @@ export function TopSelling() {
               >
                 <div className="flex items-center gap-3">
                   <div className="relative w-10 h-10 bg-muted rounded-md overflow-hidden">
-                    {product.image && (
+                    {product.product_image && (
                       <Image
-                        src={product.image}
-                        alt={product.name}
+                        src={product.product_image[0]}
+                        alt={product.product_name}
                         fill
                         className="object-cover"
                       />
@@ -67,10 +67,10 @@ export function TopSelling() {
                   </div>
                   <div>
                     <p className="text-sm font-medium leading-none">
-                      {product.name}
+                      {product.product_name}
                     </p>
                     <p className="text-xs text-muted-foreground my-1 uppercase">
-                      ID: {product.productId.toString().substring(0, 8)}
+                      ID: {product._id.toString().substring(0, 8)}
                     </p>
                   </div>
                 </div>

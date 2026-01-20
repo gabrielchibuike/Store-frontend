@@ -63,7 +63,7 @@ export function ProductGrid() {
                   }
                   originalPrice={product.originalPrice}
                   discountPercentage={product.discountPercentage}
-                  rating={product.rating}
+                  rating={product.rating as number}
                   imageColor="bg-gray-50"
                   category={product.product_category}
                   image={product.product_image?.[0]}
