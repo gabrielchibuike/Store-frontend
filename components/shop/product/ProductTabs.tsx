@@ -28,7 +28,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
             value="additional"
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-4 text-xs md:text-base font-black uppercase tracking-widest transition-all"
           >
-            Additional Info
+            Additional Infos
           </TabsTrigger>
           <TabsTrigger
             value="reviews"
