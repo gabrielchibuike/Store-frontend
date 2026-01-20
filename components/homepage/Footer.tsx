@@ -11,23 +11,38 @@ export function Footer() {
     <footer className="bg-secondary/20 pt-16 pb-8">
       <div className="container mx-auto px-4">
         {/* Newsletter Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16 bg-background p-8 rounded-2xl shadow-sm">
-          <div className="text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-2">
-              Subscribe to Our Newsletter
+        <div className="relative flex flex-col lg:flex-row justify-between items-center gap-8 mb-20 bg-primary p-8 md:p-14 rounded-[2.5rem] shadow-2xl shadow-primary/20 overflow-hidden group">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/10 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2" />
+
+          <div className="relative z-10 text-center lg:text-left space-y-3">
+            <h3 className="text-2xl md:text-4xl font-black text-white leading-tight">
+              Join Our Newsletter <br className="hidden md:block" /> & Get{" "}
+              <span className="italic text-secondary">20% Off</span>
             </h3>
-            <p className="text-muted-foreground">
-              Get updates on our latest collection and special offers.
+            <p className="text-primary-foreground/80 max-w-md mx-auto lg:mx-0 text-sm md:text-base">
+              Stay ahead of the fashion curve. Get early access to sales,
+              exclusive collection launches, and style tips.
             </p>
           </div>
-          <div className="flex w-full max-w-md gap-2">
+          <form
+            className="relative z-10 flex flex-col sm:flex-row w-full max-w-xl gap-3 p-1.5 bg-white/10 backdrop-blur-md rounded-2xl sm:rounded-full border border-white/20"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <Input
               type="email"
-              placeholder="Enter your email"
-              className="bg-secondary/50"
+              placeholder="Your email address"
+              className="bg-transparent border-none text-white placeholder:text-white/60 focus-visible:ring-0 focus-visible:ring-offset-0 h-12 md:h-14 px-6 md:text-lg w-full flex-1"
+              required
             />
-            <Button>Subscribe</Button>
-          </div>
+            <Button
+              className="bg-white text-primary hover:bg-white/90 rounded-xl sm:rounded-full h-12 md:h-14 px-8 md:px-10 font-bold text-base md:text-lg shadow-xl shadow-black/5 shrink-0"
+              type="submit"
+            >
+              Subscribe
+            </Button>
+          </form>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -84,21 +99,21 @@ export function Footer() {
                   About Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/careers" className="hover:text-primary">
                   Careers
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/blog" className="hover:text-primary">
                   Blog
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/press" className="hover:text-primary">
                   Press
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -111,7 +126,7 @@ export function Footer() {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/shipping" className="hover:text-primary">
                   Shipping Policy
                 </Link>
@@ -120,7 +135,7 @@ export function Footer() {
                 <Link href="/returns" className="hover:text-primary">
                   Returns & Exchanges
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/faq" className="hover:text-primary">
                   FAQs

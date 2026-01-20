@@ -3,6 +3,7 @@
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,9 @@ interface ProductCardProps {
   rating: number;
   imageColor: string;
   tag?: string;
+  image?: string;
+  originalPrice?: number;
+  discountPercentage?: number;
 }
 
 export function ProductCard({
@@ -25,6 +29,9 @@ export function ProductCard({
   rating,
   imageColor,
   tag,
+  image,
+  originalPrice,
+  discountPercentage,
 }: ProductCardProps) {
   const { addToCart } = useCart();
   const { addToWishlist, isInWishlist, removeFromWishlist, wishlistItems } =
@@ -67,89 +74,123 @@ export function ProductCard({
   };
 
   return (
-    <div className="group relative bg-card rounded-xl overflow-hidden border hover:shadow-lg transition-all duration-300">
+    <div className="group relative bg-card rounded-2xl overflow-hidden border hover:shadow-xl transition-all duration-500 flex flex-col h-full">
       {/* Image Container */}
       <div
-        className={`relative h-[200px] md:h-[250px] w-full ${imageColor} flex items-center justify-center p-4`}
+        className={cn(
+          "relative aspect-[4/5] w-full overflow-hidden flex items-center justify-center transition-colors duration-500",
+          imageColor || "bg-muted"
+        )}
       >
         <Link href={`/shop/product/${id}`} className="absolute inset-0 z-10">
           <span className="sr-only">View {title}</span>
         </Link>
 
-        <span className="text-sm md:text-2xl font-bold text-muted-foreground/20 pointer-events-none text-center">
-          Product Image
-        </span>
+        {image ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground/30">
+            <span className="text-4xl font-black">?</span>
+            <span className="text-xs font-bold uppercase tracking-tighter">
+              No Image
+            </span>
+          </div>
+        )}
 
         {tag && (
-          <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded z-20 pointer-events-none">
+          <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full z-20 pointer-events-none shadow-lg">
             {tag}
           </div>
         )}
 
-        {/* Hover Actions */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+        {discountPercentage && (
+          <div className="absolute top-3 right-3 bg-destructive text-white text-[10px] md:text-xs font-black px-2 py-1 rounded shadow-lg z-20">
+            -{discountPercentage}%
+          </div>
+        )}
+
+        {/* Hover Actions - Visible on mobile by default or on tap */}
+        <div className="absolute bottom-4 left-4 right-4 flex gap-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
           <Button
             size="icon"
             variant="secondary"
-            className="rounded-full h-8 w-8 bg-secondary"
+            className="flex-1 rounded-xl h-10 bg-white/90 backdrop-blur-sm border-none shadow-lg hover:bg-white text-foreground"
             onClick={handleToggleWishlist}
           >
             <Heart
-              className={`h-4 w-4 text-white ${
-                isWishlisted ? "fill-red-500 text-red-500" : ""
-              }`}
+              className={cn(
+                "h-4 w-4 transition-colors",
+                isWishlisted ? "fill-destructive text-destructive" : ""
+              )}
             />
           </Button>
           <Button
             size="icon"
             variant="secondary"
-            className="rounded-full h-8 w-8 bg-secondary"
+            className="flex-1 rounded-xl h-10 bg-primary text-primary-foreground border-none shadow-lg hover:bg-primary/90"
             onClick={handleAddToCart}
           >
-            <ShoppingCart className="h-4 w-4 text-white" />
+            <ShoppingCart className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <div className=" items-center gap-1 mb-2 lg:flex hidden">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={cn(
-                "h-4 w-4",
-                i < Math.floor(rating || 0)
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300"
-              )}
-            />
-          ))}
-          <span className="text-xs text-muted-foreground ml-1">
-            ({rating}.0)
+      <div className="p-4 md:p-5 flex flex-col flex-1 gap-2">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] truncate pr-4">
+            {category}
           </span>
+          <div className="flex items-center gap-1">
+            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            <span className="text-[10px] font-bold">{rating || 0}.0</span>
+          </div>
         </div>
+
         <Link
           href={`/shop/product/${id}`}
-          className="block hover:text-primary transition-colors"
+          className="block group-hover:text-primary transition-colors flex-1"
         >
-          <h1 className="font-medium text-xs  truncate uppercase text-muted-foreground">
-            {category}
-          </h1>
-          <h3 className="font-semibold text-lg mb-1 truncate">{title}</h3>
+          <h3 className="font-bold text-base md:text-lg mb-1 line-clamp-2 leading-snug">
+            {title}
+          </h3>
         </Link>
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-medium text-secondary">
-            ${price.toFixed(2)}
-          </span>
-          {/* <Button
-            size="sm"
-            variant="ghost"
-            className="text-primary hover:text-primary/80 p-0 h-auto font-semibold"
-            onClick={handleAddToCart}
-          >
-            Add to Cart
-          </Button> */}
+
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div className="space-y-0.5">
+            <p className="text-secondary font-black text-lg md:text-xl leading-none">
+              $
+              {price.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </p>
+            {originalPrice && originalPrice > price && (
+              <p className="text-xs text-muted-foreground line-through decoration-destructive/30">
+                $
+                {originalPrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            )}
+          </div>
+
+          <div className="flex md:hidden">
+            <Button
+              size="sm"
+              className="w-full text-[10px] h-8 rounded-lg"
+              onClick={handleAddToCart}
+            >
+              Add to Cart
+            </Button>
+          </div>
         </div>
       </div>
     </div>

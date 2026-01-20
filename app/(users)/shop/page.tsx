@@ -106,14 +106,18 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                       <ProductCard
                         key={product._id}
                         id={product._id}
-                        category={product.product_category}
                         title={product.product_name}
-                        price={product.price}
-                        rating={product.rating || 0}
-                        imageColor="bg-muted" // Placeholder color
-                        tag={
-                          product.discount ? `-${product.discount}%` : undefined
+                        price={
+                          product.isDealActive
+                            ? product.dealPrice!
+                            : product.price
                         }
+                        originalPrice={product.originalPrice}
+                        discountPercentage={product.discountPercentage}
+                        rating={product.rating || 0}
+                        category={product.product_category}
+                        imageColor="bg-gray-100"
+                        image={product.product_image?.[0]}
                       />
                     ))}
                   </div>

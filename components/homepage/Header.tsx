@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag, User, Menu, ChevronDown } from "lucide-react";
+import {
+  Search,
+  ShoppingBag,
+  User,
+  Menu,
+  ChevronDown,
+  Heart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -32,7 +40,7 @@ const staticLinks = [
 const endLinks = [
   { name: "About Us", href: "/about" },
   { name: "Contact Us", href: "/contact" },
-  { name: "Blog", href: "/blog" },
+  // { name: "Blog", href: "/blog" },
 ];
 
 export function Header() {
@@ -205,59 +213,68 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {isSearchOpen ? (
-            <div className="absolute inset-x-0 top-0 h-16 bg-background flex items-center px-4 z-50 md:relative md:inset-auto md:h-auto md:bg-transparent md:p-0 md:w-64">
-              <Input
-                type="search"
-                placeholder="Search products..."
-                className="w-full md:w-64"
-                autoFocus
-                onBlur={() => setIsSearchOpen(false)}
-              />
+            <div className="absolute inset-x-0 top-0 h-16 bg-background flex items-center px-4 z-[60] md:relative md:inset-auto md:h-auto md:bg-transparent md:p-0">
+              <div className="relative w-full md:w-64 flex items-center">
+                <Input
+                  type="search"
+                  placeholder="Search products..."
+                  className="w-full h-10 pr-10 rounded-full border-primary/20 focus-visible:ring-primary"
+                  autoFocus
+                  onBlur={() => setIsSearchOpen(false)}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 rounded-full h-8 w-8 hover:bg-transparent"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  <span className="text-2xl text-muted-foreground leading-none">
+                    &times;
+                  </span>
+                </Button>
+              </div>
             </div>
           ) : (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsSearchOpen(true)}
+              className="h-9 w-9 hover:bg-primary/5"
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4 md:h-5 md:w-5" />
               <span className="sr-only">Search</span>
             </Button>
           )}
 
-          <Button variant="ghost" size="icon" asChild className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="relative h-9 w-9 hover:bg-primary/5"
+          >
             <Link href="/wishlist">
               <span className="sr-only">Wishlist</span>
-              {/* Heart Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-              </svg>
+              <Heart className="h-4 w-4 md:h-5 md:w-5 transition-colors hover:fill-destructive hover:text-destructive" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
+                <span className="absolute top-0 right-0 sm:-top-1 sm:-right-1 h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-primary text-[9px] sm:text-[10px] font-black text-primary-foreground flex items-center justify-center animate-in zoom-in duration-300">
                   {wishlistCount}
                 </span>
               )}
             </Link>
           </Button>
 
-          <Button variant="ghost" size="icon" className="relative" asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative h-9 w-9 hover:bg-primary/5"
+            asChild
+          >
             <Link href="/cart">
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingBag className="h-4 w-4 md:h-5 md:w-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
+                <span className="absolute top-0 right-0 sm:-top-1 sm:-right-1 h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-primary text-[9px] sm:text-[10px] font-black text-primary-foreground flex items-center justify-center animate-in zoom-in duration-300">
                   {cartCount}
                 </span>
               )}
@@ -265,9 +282,14 @@ export function Header() {
             </Link>
           </Button>
 
-          <Button variant="ghost" size="icon">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 hover:bg-primary/5"
+            asChild
+          >
             <Link href="/account">
-              <User className="h-5 w-5" />
+              <User className="h-4 w-4 md:h-5 md:w-5" />
               <span className="sr-only">Account</span>
             </Link>
           </Button>

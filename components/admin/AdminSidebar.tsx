@@ -24,6 +24,7 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  Clock,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -71,6 +72,11 @@ const menu = [
     title: "Store",
     url: "/admin/store",
     icon: Store,
+  },
+  {
+    title: "Deals of the Day",
+    url: "/admin/deals",
+    icon: Clock,
   },
 ];
 

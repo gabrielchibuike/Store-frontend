@@ -10,6 +10,7 @@ import {
   Facebook,
   Twitter,
   Linkedin,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,17 +18,19 @@ import { Product } from "@/lib/services/productService";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { CountdownTimer } from "./CountdownTimer";
 
 interface ProductInfoProps {
   product: Product;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [selectedColor, setSelectedColor] = useState(
-    product.color && product.color.length > 0 ? product.color[0] : ""
+    product.color && product.color.length > 0 ? product.color[0] : "",
   );
   const [selectedSize, setSelectedSize] = useState(
-    product.size && product.size.length > 0 ? product.size[0] : ""
+    product.size && product.size.length > 0 ? product.size[0] : "",
   );
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
@@ -39,7 +42,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const handleToggleWishlist = () => {
     if (isWishlisted) {
       const wishlistItem = wishlistItems.find(
-        (item) => item.productId._id === product._id
+        (item) => item.productId._id === product._id,
       );
       if (wishlistItem) {
         removeFromWishlist(wishlistItem._id);
@@ -54,150 +57,224 @@ export function ProductInfo({ product }: ProductInfoProps) {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 md:gap-8">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="text-sm text-muted-foreground uppercase">
-          {product.product_category}
-        </div>
-        <h1 className="text-3xl font-semibold">{product.product_name}</h1>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={cn(
-                  "h-4 w-4",
-                  i < Math.floor(product.rating || 0)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-gray-300"
-                )}
-              />
-            ))}
-            <span className="text-sm font-medium ml-2">
-              {product.rating || 0}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-[0.2em] bg-primary/5 px-2 py-1 rounded">
+            {product.product_category}
+          </span>
+          {product.quantity && product.quantity > 0 ? (
+            <span className="text-[10px] md:text-xs font-bold text-green-600 uppercase tracking-wider">
+              • In Stock
             </span>
+          ) : (
+            <span className="text-[10px] md:text-xs font-bold text-destructive uppercase tracking-wider">
+              • Out of Stock
+            </span>
+          )}
+        </div>
+
+        <h1 className="text-2xl md:text-4xl font-black tracking-tight leading-tight">
+          {product.product_name}
+        </h1>
+
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-1.5 bg-yellow-400/10 px-2 py-1 rounded-lg">
+            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-black">{product.rating || 0}.0</span>
           </div>
-          <span className="text-sm text-muted-foreground">
-            ({product.reviews || 0} Reviews)
+          <div className="h-4 w-px bg-gray-200" />
+          <span className="text-sm text-muted-foreground font-medium underline underline-offset-4 cursor-pointer hover:text-primary transition-colors">
+            {product.reviews || 0} Customer Reviews
           </span>
         </div>
       </div>
 
-      {/* Price */}
-      <div className="flex items-baseline gap-3">
-        <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
-        {product.discount && (
-          <span className="text-lg text-muted-foreground line-through">
-            ${(product.price / (1 - product.discount / 100)).toFixed(2)}
+      {/* Price Section */}
+      <div className="flex flex-col gap-3 p-4 md:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="text-3xl md:text-4xl font-black text-secondary">
+            $
+            {(product.isDealActive && product.dealPrice
+              ? product.dealPrice
+              : product.price
+            ).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
+          {(product.isDealActive || product.discount) && (
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-muted-foreground line-through decoration-destructive/30">
+                $
+                {(product.isDealActive && product.originalPrice
+                  ? product.originalPrice
+                  : product.price / (1 - (product.discount || 0) / 100)
+                ).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+              <span className="text-xs font-black text-white bg-destructive px-2 py-1 rounded-md shadow-lg shadow-destructive/20 animate-pulse">
+                {product.isDealActive
+                  ? product.discountPercentage
+                  : product.discount}
+                % OFF
+              </span>
+            </div>
+          )}
+        </div>
+
+        {product.isDealActive && product.dealExpiry && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2 border-t border-gray-200/50">
+            <span className="text-xs font-black text-destructive uppercase tracking-widest">
+              Limited Time Offer:
+            </span>
+            <CountdownTimer expiryDate={product.dealExpiry} />
+          </div>
         )}
       </div>
 
       {/* Description */}
-      <p className="text-muted-foreground leading-relaxed">
-        {product.description || "No description available."}
-      </p>
+      {/* Description */}
+      <div className="space-y-2">
+        <p
+          className={cn(
+            "text-muted-foreground leading-relaxed text-sm md:text-base max-w-xl transition-all duration-300",
+            !isDescriptionExpanded && "line-clamp-3",
+          )}
+        >
+          {product.description || "No description available."}
+        </p>
 
-      {/* <Separator /> */}
-
-      {/* Color Selection */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Color:</span>
-          <span className="text-muted-foreground">{selectedColor}</span>
-        </div>
-        <div className="flex gap-3">
-          {product.color &&
-            product.color.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={cn(
-                  "h-8 w-8 rounded-full border-2 ring-offset-2 transition-all",
-                  selectedColor === color
-                    ? "ring-2 ring-primary border-transparent"
-                    : "border-transparent hover:scale-110"
-                )}
-                style={{ backgroundColor: color.toLowerCase() }}
-                title={color}
-              />
-            ))}
-        </div>
+        {product.description && product.description.length > 200 && (
+          <button
+            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+            className="text-primary text-sm font-bold hover:underline inline-flex items-center gap-1 group"
+          >
+            {isDescriptionExpanded ? "Read Less" : "Read More"}
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform duration-300",
+                isDescriptionExpanded && "rotate-180",
+              )}
+            />
+          </button>
+        )}
       </div>
 
-      {/* Size Selection */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">Size:</span>
-            <span className="text-muted-foreground">{selectedSize}</span>
+      {/* Selection Area */}
+      <div className="space-y-6">
+        {/* Color Selection */}
+        {product.color && product.color.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                Select Color
+              </span>
+              <span className="text-sm font-bold text-primary">
+                {selectedColor}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {product.color.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={cn(
+                    "h-10 w-10 rounded-full border-2 ring-offset-2 transition-all duration-300 transform active:scale-90",
+                    selectedColor === color
+                      ? "ring-2 ring-primary border-transparent scale-110"
+                      : "border-transparent hover:scale-105",
+                  )}
+                  style={{ backgroundColor: color.toLowerCase() }}
+                  title={color}
+                />
+              ))}
+            </div>
           </div>
-          <button className="text-sm text-primary underline hover:text-primary/80">
-            View Size Guide
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          {product.size &&
-            product.size.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={cn(
-                  "h-10 w-14 rounded-md border text-sm font-medium transition-all",
-                  selectedSize === size
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background hover:bg-muted"
-                )}
-              >
-                {size}
+        )}
+
+        {/* Size Selection */}
+        {product.size && product.size.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                Select Size
+              </span>
+              <button className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-primary underline underline-offset-4 decoration-2">
+                View Size Guide
               </button>
-            ))}
-        </div>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {product.size.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={cn(
+                    "min-w-[60px] h-12 rounded-xl border-2 text-sm font-black transition-all duration-300 transform active:scale-95",
+                    selectedSize === size
+                      ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
+                      : "bg-white border-gray-100 hover:border-primary/30 hover:bg-primary/5",
+                  )}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        {/* Quantity */}
-        <div className="flex items-center border rounded-md w-fit">
-          <button
-            onClick={decrementQuantity}
-            className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
+      <div className="flex flex-col gap-4 pt-4 md:pt-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Quantity selector */}
+          <div className="flex items-center bg-gray-100/50 rounded-2xl p-1.5 h-14 w-full sm:w-auto">
+            <button
+              onClick={decrementQuantity}
+              className="h-11 w-11 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition-all text-muted-foreground hover:text-primary"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="flex-1 sm:w-14 text-center font-black text-lg">
+              {quantity}
+            </span>
+            <button
+              onClick={incrementQuantity}
+              className="h-11 w-11 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition-all text-muted-foreground hover:text-primary"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+
+          <Button
+            className="h-14 flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl font-black text-base md:text-lg shadow-xl shadow-primary/20 transition-all active:scale-95"
+            onClick={() => addToCart(product._id, quantity, product)}
           >
-            <Minus className="h-4 w-4" />
-          </button>
-          <span className="h-12 w-12 flex items-center justify-center font-medium border-x">
-            {quantity}
-          </span>
-          <button
-            onClick={incrementQuantity}
-            className="h-12 w-12 flex items-center justify-center hover:bg-muted transition-colors"
+            Add To Cart
+          </Button>
+
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-14 w-14 rounded-2xl border-2 border-gray-100 hover:border-destructive/20 hover:bg-destructive/5 shrink-0 group transition-all"
+            onClick={handleToggleWishlist}
           >
-            <Plus className="h-4 w-4" />
-          </button>
+            <Heart
+              className={cn(
+                "h-6 w-6 transition-all",
+                isWishlisted
+                  ? "fill-destructive text-destructive scale-110"
+                  : "text-muted-foreground group-hover:text-destructive",
+              )}
+            />
+          </Button>
         </div>
 
-        <Button
-          className="h-12 flex-1 bg-[#4A2B0F] hover:bg-[#3A220B] text-white"
-          onClick={() => addToCart(product._id, quantity, product)}
-        >
-          Add To Cart
-        </Button>
-        <Button className="h-12 flex-1 bg-[#F5B041] hover:bg-[#D49838] text-black">
-          Buy Now
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-12 w-12"
-          onClick={handleToggleWishlist}
-        >
-          <Heart
-            className={`h-5 w-5 ${
-              isWishlisted ? "fill-red-500 text-red-500" : ""
-            }`}
-          />
+        <Button className="h-14 w-full bg-secondary hover:bg-secondary/90 text-white rounded-2xl font-black text-base md:text-lg shadow-xl shadow-secondary/20 transition-all active:scale-95">
+          Buy It Now
         </Button>
       </div>
 

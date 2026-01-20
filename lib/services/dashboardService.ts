@@ -1,4 +1,5 @@
 import { apiRequest } from "./api";
+import { Product } from "./productService";
 
 export interface DashboardSummary {
   revenue: number;
@@ -57,7 +58,7 @@ export const getActivityFeed = async () => {
 };
 
 export const getTopSellingProducts = async (range: "week" | "month") => {
-  const response = await apiRequest<TopSellingProduct[]>(
+  const response = await apiRequest<Product[]>(
     `dashboard/top-selling?range=${range}`,
     {
       method: "GET",

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const blogPosts = [
@@ -9,6 +10,8 @@ const blogPosts = [
       "Discover the hottest trends that are taking over the fashion world this summer.",
     date: "May 15, 2024",
     imageColor: "bg-[#E6E6FA]",
+    image:
+      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070&auto=format&fit=crop",
   },
   {
     title: "Sustainable Fashion: Tips, Trends, and Importance",
@@ -16,6 +19,8 @@ const blogPosts = [
       "Why sustainable fashion matters and how you can build an eco-friendly wardrobe.",
     date: "May 10, 2024",
     imageColor: "bg-[#F5E6D3]",
+    image:
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop",
   },
   {
     title: "Fall Fashion Frenzy: The Ultimate Style Guide",
@@ -23,6 +28,8 @@ const blogPosts = [
       "Get ready for the fall season with our comprehensive style guide.",
     date: "May 05, 2024",
     imageColor: "bg-[#E0FFFF]",
+    image:
+      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop",
   },
 ];
 
@@ -43,9 +50,12 @@ export function BlogSection() {
               <div
                 className={`h-[250px] ${post.imageColor} rounded-2xl mb-4 overflow-hidden relative`}
               >
-                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-xl group-hover:scale-105 transition-transform duration-500">
-                  Blog Image
-                </div>
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Calendar className="h-4 w-4" />

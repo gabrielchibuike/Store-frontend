@@ -24,6 +24,11 @@ export interface Product {
   dateAdded?: string;
   stockStatus?: string;
   additionalInfo?: string;
+  isDealActive?: boolean;
+  dealPrice?: number;
+  originalPrice?: number;
+  discountPercentage?: number;
+  dealExpiry?: string;
 }
 
 export interface FilterOptions {
